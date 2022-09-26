@@ -1,0 +1,173 @@
+openapi: "3.0.2"
+info:
+  title: Fin Portfolio APIs
+  version: "1.0"
+servers:
+  - url: https://yubi.api/v1
+paths:
+  /portfolio:
+    get:
+      summary: Returns current users bond portfolio for Yubi Fin platform including list of holdings and portfolio summary
+      tags:
+        - portfolio
+      parameters:
+        - name: platformId
+          in: query
+          description: Platform / Yubi application id for which user portfolio is being requested; if this service/
+          schema:
+            type: string
+        - name: userId
+          in: query
+          description: user id of user of whom portfolio is being requested
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: showHoldingCount
+          in: query
+          description: Parameter indicating first how many holdings from portfolio need to be returned in response
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/portfolio'
+
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+        '401':
+          description: Unauthorised
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+
+components:
+
+#  securitySchemes:
+#    OAuth2.0:
+#      type: oauth2
+#      description: This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)
+#      flows:
+#        implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+#          authorizationUrl: <TBD --> Auth0 specific URL to be added ?? >
+#          scopes:
+#            read_portfolio: read portfolio for a user for a specific Yubi platform/ application
+
+  schemas:
+
+    bond_type:
+      type: string
+      enum: [ NCD, MLD ]
+
+    bond_rating:
+      type: string
+      enum: [ AAA, AA+, AA, AA-, A+, A, A-, BBB+, BBB, BBB-, BB+, BB, BB-, B+, B, B-, CCC, CC, C, D ]
+
+    order:
+      type: object
+      properties:
+        orderId:
+          type: string
+          format: uuid
+        tradeDate:
+          type: string
+          format: date
+          description: Date when order was placed and paid for
+          example: 2022-07-23
+        units:
+          type: integer
+
+    cashflow:
+      type: object
+      properties:
+        period:
+          type: string
+          format: regex
+          pattern: '^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d{4}'
+        interestAmount:
+          type: number
+          format: float
+        principleAmount:
+          type: number
+          format: float
+
+    holding:
+      type: object
+      properties:
+        orderId:
+          type: string
+          format: uuid
+        bondName:
+          type: string
+        issuerName:
+          type: string
+        productType:
+          $ref: '#/components/schemas/bond_type'
+        units:
+          type: integer
+        investedAmount:
+          type: number
+          format: float
+        currentValue:
+          type: number
+          format: float
+        absoluteReturns:
+          type: number
+          format: float
+        percentReturns:
+          type: number
+          format: float
+      rateOfInterest:
+          type: number
+          format: float
+        rating:
+          $ref: '#/components/schemas/bond_rating'
+        order:
+          $ref: '#/components/schemas/order'
+        cashflows:
+          type: array
+          items:
+            $ref: '#/components/schemas/cashflow'
+
+    portfolio:
+      type: object
+      properties:
+        platformId:
+          type: string
+        userId:
+          type: string
+          format: uuid
+        investedAmount:
+          type: number
+          format: float
+        currentValue:
+          type: number
+          format: float
+        absoluteReturns:
+          type: number
+          format: float
+        percentReturns:
+          type: number
+          format: float
+        cashflows:
+          type: array
+          items:
+            $ref: '#/components/schemas/cashflow'
+
