@@ -11,7 +11,7 @@ paths:
       tags:
         - portfolio
       parameters:
-        - name: platformId
+        - name: platformId # remove if portfolio service not to be used for other Yubi applications in future
           in: query
           description: Platform / Yubi application id for which user portfolio is being requested; if this service/
           schema:
@@ -23,11 +23,6 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: showHoldingCount
-          in: query
-          description: Parameter indicating first how many holdings from portfolio need to be returned in response
-          schema:
-            type: integer
 
       responses:
         '200':
@@ -93,7 +88,11 @@ components:
           example: 2022-07-23
         units:
           type: integer
-
+        totalPurchasePrice:
+          type: number
+          format: float
+          description: Total amount paid to purchase all the units of this bond
+# Double check with Ankit if total amount contains anything beyond unit price x no. of units (like GST, commissions, brokerage, charges etc)
 
     cashflow:
       type: object
@@ -109,12 +108,9 @@ components:
           type: number
           format: float
 
-    holding:
+    orderHolding:
       type: object
       properties:
-        orderId:
-          type: string
-          format: uuid
         bondName:
           type: string
         issuerName:
@@ -138,11 +134,6 @@ components:
         rateOfInterest:
           type: number
           format: float
-        dateOfPurchase:
-          type: string
-          format: date
-          description: Date when the bond was purchased
-          example: 2022-07-23
         maturityDate:
           type: string
           format: date
@@ -181,4 +172,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/cashflow'
+        holdings:
+          type: array
+          items:
+            $ref: '#/components/schemas/orderHolding'
 
