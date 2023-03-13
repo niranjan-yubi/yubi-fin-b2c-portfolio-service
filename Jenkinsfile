@@ -5,5 +5,8 @@ env.serviceName           = "portfolio-service"
 env.artifactType          = "docker"
 env.checkMarxProjectName  = "Fin B2C - Portfolio Service"
 env.mavenRemote           = "https://com-yubi-fin-b2c-688568033138.d.codeartifact.ap-south-1.amazonaws.com/maven/core-api-common/"
+env.skipCheckMarx         = "false"
+env.skipDtrack            = "false"
+env.skipCodeChecks        = "true"
 env.REPOS_FOR_ARTIFACTS   = ['master']
 backend()
